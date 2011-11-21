@@ -222,19 +222,19 @@ public class GABIL {
         return min + (int)(Math.random() * (max - min));
     }
 
-    public int[] getds(int x1, int x2, int hyp_size, int rule_size){
+    public int[] getds(int x1, int x2, int rule_size){
         
         int[] ds = new int[2];
 
         if (x1<=rule_size)
             ds[0]=x1;
         else
-            ds[0]=rule_size-(x1%rule_size);
+            ds[0]=x1%rule_size;
 
         if (x2<=rule_size)
             ds[1]=x2;
         else
-            ds[1]=rule_size-(x2%rule_size);
+            ds[1]=x2%rule_size;
 
         return ds;
         
@@ -251,7 +251,7 @@ public class GABIL {
         int x1 = random(1,p1.length);
         int x2 = random(x1,p1.length);
 
-        int[] ds = getds(x1,x2,p1.length,Parser.REP_SIZE);
+        int[] ds = getds(x1,x2,Parser.REP_SIZE);
 
         int[] ds_b = {0,0};
         int x1_b = 0;
@@ -261,7 +261,7 @@ public class GABIL {
         while (ds_b[0]!=ds[0] || ds_b[1]!=ds[1] ){
             x1_b = random(1,p2.length);
             x2_b = random(x1_b,p2.length);
-            ds_b = getds(x1_b,x2_b,p2.length,Parser.REP_SIZE);
+            ds_b = getds(x1_b,x2_b,Parser.REP_SIZE);
         }
 
         // Se inicializan los nuevos hijos
