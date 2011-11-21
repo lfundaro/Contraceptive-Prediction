@@ -446,6 +446,7 @@ public class GABIL {
         ArrayList<int[]> population = initPop();
         double[] ftn = fitness(population);
         Pair best;
+        int runner = 0;
         while ((best = max(ftn)).getRight() < fitness_threshold) {
             // Crear nueva generación
             int prop = (int) ((1-r)*p);
@@ -456,6 +457,9 @@ public class GABIL {
             mutate(Ps);
             population = Ps;
             ftn = fitness(population);
+             System.out.println( r );
+            System.out.println("Flag: "+max(ftn));
+            runner++;
         }
         return population.get(best.getLeft());
     }
