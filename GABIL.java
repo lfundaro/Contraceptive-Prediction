@@ -122,6 +122,24 @@ public class GABIL {
         }
         return valid == 1;
     }
+
+    public boolean validHyp(int[] hyp){
+
+        for (int i=0; i<hyp.length/Parser.REP_SIZE; i++){
+            int offset = Parser.REP_SIZE*i;
+            if (!validGen(hyp,0+offset,7+offset)) return false;
+            if (!validGen(hyp,7+offset,11+offset)) return false;
+            if (!validGen(hyp,11+offset,15+offset)) return false;
+            if (!validGen(hyp,15+offset,21+offset)) return false;
+            if (!validGen(hyp,21+offset,23+offset)) return false;
+            if (!validGen(hyp,23+offset,25+offset)) return false;
+            if (!validGen(hyp,25+offset,29+offset)) return false;
+            if (!validGen(hyp,29+offset,33+offset)) return false;
+            if (!validGen(hyp,33+offset,35+offset)) return false;
+        }
+
+        return true;
+    }
     
     private void init(int[] ex) {
         for(int i = 0; i < ex.length; i++)
@@ -267,69 +285,83 @@ public class GABIL {
         
     }
 
-    private ArrayList<int []> crossover(int tamano_pop, double[] ftn,
-            ArrayList<int[]> population, ArrayList<int[]> Ps){
+    private ArrayList<int []> crossover(int n_cross, 
+            ArrayList<int[]> population, double[] ftn, ArrayList<int[]> Ps,
+            ArrayList<Pair> Pr){
 
-        // Seleccionar aleatoriamente un par de padres
-        int[] p1 = null;
-        int[] p2 = null;
+        for (int i_cross=0; i_cross<n_cross; i_cross++){
 
-        // Se calcula el par de corte para el primer padre
-        int x1 = random(1,p1.length);
-        int x2 = random(x1,p1.length);
+            ArrayList<int []> padres = rouletteSelection(2, population, Pr);
 
-        int[] ds = getds(x1,x2,Parser.REP_SIZE);
+            // Seleccionar probabilisticamente un par de padres (rueda de ruleta)
+            int[] p1 = padres.get(0);
+            int[] p2 = padres.get(1);
 
-        int[] ds_b = {0,0};
-        int x1_b = 0;
-        int x2_b = 0;
-        // Se calcula el par de corte para el segundo padre
-        // y se valida hasta que sea correcto
-        while (ds_b[0]!=ds[0] || ds_b[1]!=ds[1] ){
-            x1_b = random(1,p2.length);
-            x2_b = random(x1_b,p2.length);
-            ds_b = getds(x1_b,x2_b,Parser.REP_SIZE);
+            // Se calcula el par de corte para el primer padre
+            int x1 = random(1,p1.length);
+            int x2 = random(x1,p1.length);
+
+            int[] ds = getds(x1,x2,Parser.REP_SIZE);
+
+            int[] ds_b = {0,0};
+            int x1_b = 0;
+            int x2_b = 0;
+            // Se calcula el par de corte para el segundo padre
+            // y se valida hasta que sea correcto
+            while (ds_b[0]!=ds[0] || ds_b[1]!=ds[1] ){
+                x1_b = random(1,p2.length);
+                x2_b = random(x1_b,p2.length);
+                ds_b = getds(x1_b,x2_b,Parser.REP_SIZE);
+            }
+
+            // Se inicializan los nuevos hijos
+            int [] hijo1 = new int[x1+(x2_b-x1_b)+p1.length-x2];
+            int [] hijo2 = new int[x1_b+(x2-x1)+p2.length-x2_b];
+
+            int conth1 = 0;
+            int conth2 = 0;
+            // Se llenan los hijos
+
+            // Hijo1
+            for (int i = 0; i<x1 ; i++){
+                hijo1[conth1] = p1[i];
+                conth1++;
+            }
+            for (int i = x1_b; i<x2_b ; i++){
+                hijo1[conth1] = p2[i];
+                conth1++;
+            }
+            for (int i = x2; i<p1.length ; i++){
+                hijo1[conth1] = p1[i];
+                conth1++;
+            }
+
+            // Hijo2
+            for (int i = 0; i<x1_b ; i++){
+                hijo2[conth2] = p2[i];
+                conth2++;
+            }
+            for (int i = x1; i<x2 ; i++){
+                hijo2[conth2] = p1[i];
+                conth2++;
+            }
+            for (int i = x2_b; i<p2.length ; i++){
+                hijo2[conth2] = p2[i];
+                conth2++;
+            }
+
+
+
+            // Se agregan los hijos a la nueva poblacion
+            if (validHyp(hijo1)){
+                Ps.add(hijo1);
+                Ps.add(hijo2);
+            }
+            else{
+                i_cross--;
+            }
+
         }
-
-        // Se inicializan los nuevos hijos
-        int [] hijo1 = new int[x1+(x2_b-x1_b)+p1.length-x2];
-        int [] hijo2 = new int[x1_b+(x2-x1)+p2.length-x2_b];
-
-        int conth1 = 0;
-        int conth2 = 0;
-        // Se llenan los hijos
-
-        // Hijo1
-        for (int i = 0; i<x1 ; i++){
-            hijo1[conth1] = p1[i];
-            conth1++;
-        }
-        for (int i = x1_b; i<x2_b ; i++){
-            hijo1[conth1] = p2[i];
-            conth1++;
-        }
-        for (int i = x2; i<p1.length ; i++){
-            hijo1[conth1] = p1[i];
-            conth1++;
-        }
-
-        // Hijo2
-        for (int i = 0; i<x1_b ; i++){
-            hijo2[conth2] = p2[i];
-            conth2++;
-        }
-        for (int i = x1; i<x2 ; i++){
-            hijo2[conth2] = p1[i];
-            conth2++;
-        }
-        for (int i = x2_b; i<p2.length ; i++){
-            hijo2[conth2] = p2[i];
-            conth2++;
-        }
-
-        // Se agregan los hijos a la nueva poblacion
-        Ps.add(hijo1);
-        Ps.add(hijo2);
 
         // Retornamos la nueva poblacion completa
         return Ps;
@@ -414,7 +446,8 @@ public class GABIL {
             int prop = (int) ((1-r)*p);
             ArrayList<Pair> Pr = computeProbs(ftn);
             ArrayList<int[]> Ps = rouletteSelection(prop, population, Pr);
-            Ps = crossover(p, ftn, population, Ps);
+            int n_cross = (int) ((r*p)/2);
+            Ps = crossover(n_cross, population, ftn, Ps, Pr);
             mutate(Ps);
         }
         return finalHyp;
