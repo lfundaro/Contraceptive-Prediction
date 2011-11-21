@@ -156,9 +156,6 @@ public class GABIL {
     
     private int testAgainstTS(int[] hyp, int l) {
         Iterator<int[]> it = trainingData.iterator();
-        int[] seq = {Parser.AGE_SIZE, Parser.CAT_SIZE, Parser.CAT_SIZE,
-            Parser.NCHILD_SIZE, Parser.REL_SIZE, Parser.WORK_SIZE, Parser.CAT_SIZE,
-            Parser.CAT_SIZE, Parser.MEX_SIZE, Parser.MTH_SIZE};
         int classified = 0;
         while (it.hasNext()) {
             int[] example = it.next();
@@ -167,8 +164,8 @@ public class GABIL {
             boolean testOK = true;
             while (testOK && field < Parser.FIELDS) {
                 testOK &= matchRulePortion(hyp, example, index,
-                        index + seq[field]);
-                index += seq[field];
+                        index + Parser.seq[field]);
+                index += Parser.seq[field];
                 field++;
             }
             if (testOK) {classified++;}
@@ -371,6 +368,40 @@ public class GABIL {
                     }
                 }
             }
+        }
+    }
+    
+    private void addAlternative(int[] hyp) {
+        Random gen = new Random();
+        int which;
+        while(true) {
+            which = (int) (gen.nextDouble()*(hyp.length));
+            if (which != 0 && (which % 35 == 0)) {
+                continue;
+            } else {
+                if (hyp[which] == 0) {
+                    hyp[which] = 1;
+                    break;
+                } else
+                    continue;
+            }
+        }
+    }
+    
+    private void dropCondition(int[] hyp) {
+        Random gen = new Random();
+        int whichCond = (int) (gen.nextDouble()*(10));
+        int nrules = hyp.length / Parser.REP_SIZE;
+        int whichRule = (int) (gen.nextDouble()*(nrules));
+        int base = 0;
+        for(int i = 0; i < whichCond; i++) {
+            base += Parser.seq[i];
+        }
+        for(int i = whichRule*Parser.REP_SIZE + base; 
+                i < whichRule*Parser.REP_SIZE + base + Parser.seq[whichCond];
+                i++) {
+            if (hyp[i] == 0) 
+                hyp[i] = 1;
         }
     }
     

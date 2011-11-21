@@ -26,6 +26,9 @@ public class Parser {
     public static final int MEX_SIZE = 2;
     public static final int MTH_SIZE = 1;
     public static final int FIELDS = 10;
+    public static final int[] seq = {Parser.AGE_SIZE, Parser.CAT_SIZE,
+        Parser.CAT_SIZE, Parser.NCHILD_SIZE, Parser.REL_SIZE, Parser.WORK_SIZE,
+        Parser.CAT_SIZE, Parser.CAT_SIZE, Parser.MEX_SIZE, Parser.MTH_SIZE};
 
     public Parser(String fname) {
         filePath = fname;
