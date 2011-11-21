@@ -164,7 +164,8 @@ public class GABIL {
                 index += Parser.REP_SIZE;
             }
             // Calcular fitness overall de la hipótesis
-            overall = ((double) acc) / ((double) trainingData.size());
+            overall = (((double) acc) / ((double) trainingData.size()) 
+                    / nrules);
             // Asignar a la i-ésima hipótesis su valor fitness
             ftn[cnt] = overall;
             cnt++;
@@ -204,12 +205,16 @@ public class GABIL {
         return valid == 1;
     }
     
-    private double max(double[] ftn) {
+    private Pair max(double[] ftn) {
         double h = 0.0;
+        double dup = h;
+        int index = 0;
         for(int i = 0; i < ftn.length; i++) {
             h = Math.max(h, ftn[i]);
+            if (h != dup) {index = i;}
+            dup = h;
         }
-        return h;
+        return new Pair(index, h);
     }
     
     private ArrayList<int[]> rouletteSelection(int prop,
@@ -438,10 +443,10 @@ public class GABIL {
     }
     
     public int[] go() {
-        int[] finalHyp = new int[20];
         ArrayList<int[]> population = initPop();
         double[] ftn = fitness(population);
-        while (max(ftn) < fitness_threshold) {
+        Pair best;
+        while ((best = max(ftn)).getRight() < fitness_threshold) {
             // Crear nueva generación
             int prop = (int) ((1-r)*p);
             ArrayList<Pair> Pr = computeProbs(ftn);
@@ -449,7 +454,9 @@ public class GABIL {
             int n_cross = (int) ((r*p)/2);
             Ps = crossover(n_cross, population, ftn, Ps, Pr);
             mutate(Ps);
+            population = Ps;
+            ftn = fitness(population);
         }
-        return finalHyp;
+        return population.get(best.getLeft());
     }
 }

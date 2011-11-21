@@ -11,7 +11,8 @@ public class Genetico {
         try {
             Parser p = new Parser(args[0]);
             ArrayList<int[]> trainingData = p.go();
-            GABIL g = new GABIL(trainingData, 10, 0.5, 0.0001, 1.0);
+            GABIL g = new GABIL(trainingData, 500, 100, 0.005, 0.6);
+            g.go();
 
         }
         catch(ArrayIndexOutOfBoundsException e) {
