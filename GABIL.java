@@ -194,8 +194,34 @@ public class GABIL {
     }
     
     private ArrayList<int[]> rouletteSelection(int prop, double[] ftn, 
-            ArrayList<int[]> population) {
-        return new ArrayList<int[]>();
+            ArrayList<int[]> population, ArrayList<Pair> Pr) {
+        Random gen = new Random();
+        ArrayList<int[]> Ps = new ArrayList<int[]>(prop);
+        double acc = 0.0;
+        Pair tmp;
+        Pair aux;
+        ArrayList<Pair> AccN = new ArrayList<Pair>(Pr.size());
+        Iterator<Pair> it = Pr.iterator();
+        while (it.hasNext()) {
+            tmp = it.next();
+            aux = tmp.clone();
+            tmp.setRight(tmp.getRight() + acc);
+            AccN.add(tmp);
+            acc += aux.getRight();
+        } 
+        double g;
+        for(int i = 0; i < prop; i++) {
+            g = gen.nextDouble()*(2.0); // Rango [0,1]
+            it = AccN.iterator();
+            while (it.hasNext()) {
+                tmp = it.next();
+                if (tmp.getRight() > g) {
+                    Ps.add(population.get(tmp.getLeft()));
+                    break;
+                }
+            } 
+        }
+        return Ps;
     }
     
     private ArrayList<Pair> computeProbs(double[] ftn) {
@@ -308,7 +334,42 @@ public class GABIL {
         return Ps;
 
     }
-
+    
+    private void mutate(ArrayList<int[]> Ps) {
+        int n = (int) (m*Ps.size() / 100);
+        Random gen = new Random();
+        int indexC;
+        int index;
+        int whichBit;
+        int[] candidate;
+        int[] backup;
+        for(int i = 0; i < n; i++) {
+            while(true) {
+                indexC = (int) (gen.nextDouble()*(Ps.size()));
+                candidate = Ps.get(indexC);
+                whichBit = (int) (gen.nextDouble()*(candidate.length));
+                backup = candidate.clone();
+                // Check si coincide con método anticonceptivo
+                if (whichBit % 35 == 0) {
+                    // Modificación especial
+                    candidate[whichBit] = (int) (1 + gen.nextDouble()*(3)); 
+                } 
+                else {
+                    candidate[whichBit] = (candidate[whichBit] == 0) ? 1 : 0;
+                    // Verificar que el flip no haya dañado la regla.
+                    if (true /*check validez de regla*/) {
+                        break;
+                    }
+                    else {
+                        // Revertir cambios
+                        Ps.remove(indexC);
+                        Ps.add(backup);
+                    }
+                }
+            }
+        }
+    }
+    
     public int[] go() {
         int[] finalHyp = new int[20];
         ArrayList<int[]> population = initPop();
@@ -317,8 +378,9 @@ public class GABIL {
             // Crear nueva generación
             int prop = (int) ((1-r)*p); 
             ArrayList<Pair> Pr = computeProbs(ftn);
-            ArrayList<int[]> Ps = rouletteSelection(prop, ftn, population);
+            ArrayList<int[]> Ps = rouletteSelection(prop, ftn, population, Pr);
             Ps = crossover(p, ftn, population, Ps);
+            mutate(Ps);
         }
         return finalHyp;
     }

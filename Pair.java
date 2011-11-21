@@ -21,6 +21,25 @@ public class Pair {
     public double getRight() {
         return right;
     }
+
+    public void setLeft(int left) {
+        this.left = left;
+    }
+
+    public void setRight(double right) {
+        this.right = right;
+    }
+
+    @Override
+    protected Pair clone() {
+        Pair n = new Pair(this.left, this.right);
+        return n;
+    }
+    
+    @Override
+    public String toString() {
+        return "Pair{" + "left=" + left + ", right=" + right + '}';
+    }
     
     
 }
