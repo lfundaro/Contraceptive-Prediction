@@ -17,7 +17,7 @@ public class GABIL {
     double m;   // Tasa de mutación.
     double fitness_threshold;
     
-    public GABIL(ArrayList<int[]> training, int p, double r, double m, 
+    public GABIL(ArrayList<int[]> training, int p, double r, double m,
             double fthld) {
         trainingData = training;
         this.p = p;
@@ -62,18 +62,17 @@ public class GABIL {
         return pool;
     }
     
-        private void genMethodField(int[] hyp, Random gen, int l, int h) {
-            double g = gen.nextDouble();
-            int method = 1 + (int) (g*(3));
-            for(int i = l; i < h; i++)
-                hyp[i] = method;
-            return;
-        }
-  
+    private void genMethodField(int[] hyp, Random gen, int l, int h) {
+        double g = gen.nextDouble();
+        int method = 1 + (int) (g*(3));
+        for(int i = l; i < h; i++)
+            hyp[i] = method;
+        return;
+    }
+    
     
     private int genField(int[] hyp, Random gen, int l, int h, String type) {
         double g = gen.nextDouble();
-        int age;
         while (!validGen(hyp, l, h)) {
             if (g <= 0.5) {
                 // Random bit-a-bit
@@ -109,7 +108,7 @@ public class GABIL {
                 } else if (type.compareTo("MEX") == 0) {
                     w = (int) (g*(2));
                     Parser.calMediaExp(hyp, w, l);
-                } 
+                }
             }
             g = gen.nextDouble();
         }
@@ -158,8 +157,8 @@ public class GABIL {
     private int testAgainstTS(int[] hyp, int l) {
         Iterator<int[]> it = trainingData.iterator();
         int[] seq = {Parser.AGE_SIZE, Parser.CAT_SIZE, Parser.CAT_SIZE,
-        Parser.NCHILD_SIZE, Parser.REL_SIZE, Parser.WORK_SIZE, Parser.CAT_SIZE,
-        Parser.CAT_SIZE, Parser.MEX_SIZE, Parser.MTH_SIZE};
+            Parser.NCHILD_SIZE, Parser.REL_SIZE, Parser.WORK_SIZE, Parser.CAT_SIZE,
+            Parser.CAT_SIZE, Parser.MEX_SIZE, Parser.MTH_SIZE};
         int classified = 0;
         while (it.hasNext()) {
             int[] example = it.next();
@@ -167,7 +166,7 @@ public class GABIL {
             int index = l;
             boolean testOK = true;
             while (testOK && field < Parser.FIELDS) {
-                testOK &= matchRulePortion(hyp, example, index, 
+                testOK &= matchRulePortion(hyp, example, index,
                         index + seq[field]);
                 index += seq[field];
                 field++;
@@ -179,8 +178,13 @@ public class GABIL {
     
     private boolean matchRulePortion(int[] hyp, int[] example, int l, int h) {
         int valid = 0;
-        for(int i = l; i < h; i++) {
-            valid |= hyp[i] & example[i];
+        // Check si se hace match con Method
+        if (l != 0 && (l % 35 == 0)) {
+            return (example[l] == hyp[l]);
+        } else {
+            for(int i = l; i < h; i++) {
+                valid |= (hyp[i] & example[i]);
+            }
         }
         return valid == 1;
     }
@@ -190,10 +194,10 @@ public class GABIL {
         for(int i = 0; i < ftn.length; i++) {
             h = Math.max(h, ftn[i]);
         }
-        return r;
+        return h;
     }
     
-    private ArrayList<int[]> rouletteSelection(int prop, double[] ftn, 
+    private ArrayList<int[]> rouletteSelection(int prop,
             ArrayList<int[]> population, ArrayList<Pair> Pr) {
         Random gen = new Random();
         ArrayList<int[]> Ps = new ArrayList<int[]>(prop);
@@ -203,23 +207,23 @@ public class GABIL {
         ArrayList<Pair> AccN = new ArrayList<Pair>(Pr.size());
         Iterator<Pair> it = Pr.iterator();
         while (it.hasNext()) {
-            tmp = it.next();
+            tmp = (it.next()).clone();
             aux = tmp.clone();
             tmp.setRight(tmp.getRight() + acc);
             AccN.add(tmp);
             acc += aux.getRight();
-        } 
+        }
         double g;
         for(int i = 0; i < prop; i++) {
             g = gen.nextDouble()*(2.0); // Rango [0,1]
             it = AccN.iterator();
             while (it.hasNext()) {
                 tmp = it.next();
-                if (tmp.getRight() > g) {
+                if (tmp.getRight() >= g) {
                     Ps.add(population.get(tmp.getLeft()));
                     break;
                 }
-            } 
+            }
         }
         return Ps;
     }
@@ -247,7 +251,6 @@ public class GABIL {
         int n = (int) (m*Ps.size() / 100);
         Random gen = new Random();
         int indexC;
-        int index;
         int whichBit;
         int[] candidate;
         int[] backup;
@@ -258,10 +261,11 @@ public class GABIL {
                 whichBit = (int) (gen.nextDouble()*(candidate.length));
                 backup = candidate.clone();
                 // Check si coincide con método anticonceptivo
-                if (whichBit % 35 == 0) {
+                if (whichBit != 0 && (whichBit % 35 == 0)) {
                     // Modificación especial
-                    candidate[whichBit] = (int) (1 + gen.nextDouble()*(3)); 
-                } 
+                    candidate[whichBit] = (int) (1 + gen.nextDouble()*(3));
+                    break;
+                }
                 else {
                     candidate[whichBit] = (candidate[whichBit] == 0) ? 1 : 0;
                     // Verificar que el flip no haya dañado la regla.
@@ -284,9 +288,9 @@ public class GABIL {
         double[] ftn = fitness(population);
         while (max(ftn) < fitness_threshold) {
             // Crear nueva generación
-            int prop = (int) ((1-r)*p); 
+            int prop = (int) ((1-r)*p);
             ArrayList<Pair> Pr = computeProbs(ftn);
-            ArrayList<int[]> Ps = rouletteSelection(prop, ftn, population, Pr);
+            ArrayList<int[]> Ps = rouletteSelection(prop, population, Pr);
             
             
             
