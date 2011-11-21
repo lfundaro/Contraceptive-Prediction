@@ -214,7 +214,8 @@ public class GABIL {
             if (h != dup) {index = i;}
             dup = h;
         }
-        return new Pair(index, h);
+        Pair res = new Pair(index, h);
+        return res;
     }
     
     private ArrayList<int[]> rouletteSelection(int prop,
@@ -226,23 +227,30 @@ public class GABIL {
         Pair aux;
         ArrayList<Pair> AccN = new ArrayList<Pair>(Pr.size());
         Iterator<Pair> it = Pr.iterator();
+        double acumulador = 0.0;
         while (it.hasNext()) {
             tmp = (it.next()).clone();
             aux = tmp.clone();
+            acumulador += tmp.getRight(); 
             tmp.setRight(tmp.getRight() + acc);
             AccN.add(tmp);
             acc += aux.getRight();
         }
+        System.out.println("Acumulador = "+acumulador);
+//        System.out.println("Size' = "+AccN.size());
         double g;
         for(int i = 0; i < prop; i++) {
-            g = gen.nextDouble()*(2.0); // Rango [0,1]
+            g = gen.nextDouble()*(acumulador); // Rango [0,1]
             it = AccN.iterator();
             while (it.hasNext()) {
                 tmp = it.next();
+//                System.out.println("G = "+g);
+//                System.out.println("Tmp.right = "+tmp.getRight());
                 if (tmp.getRight() >= g) {
                     Ps.add(population.get(tmp.getLeft()));
                     break;
                 }
+                System.out.println("Size PS = "+Ps.size());
             }
         }
         return Ps;
@@ -445,10 +453,16 @@ public class GABIL {
     public int[] go() {
         ArrayList<int[]> population = initPop();
         double[] ftn = fitness(population);
+        for(int i = 0; i < ftn.length; i++)
+            System.out.print(ftn[i]+" ");
+        System.out.println("");
         Pair best;
         while ((best = max(ftn)).getRight() < fitness_threshold) {
             // Crear nueva generación
-            int prop = (int) ((1-r)*p);
+            int prop = 500;
+            System.out.println("r = "+r);
+            double prop2 = ((1.0-r)*(double) p);
+            System.out.println("Prop = "+prop2);
             ArrayList<Pair> Pr = computeProbs(ftn);
             ArrayList<int[]> Ps = rouletteSelection(prop, population, Pr);
             int n_cross = (int) ((r*p)/2);
@@ -456,6 +470,12 @@ public class GABIL {
             mutate(Ps);
             population = Ps;
             ftn = fitness(population);
+//            System.out.println("NewFitness");
+//            for(int i = 0; i < ftn.length; i++)
+//                System.out.print(ftn[i]+" ");
+//            System.out.println("");
+//            System.out.println("Best in go");
+//            System.out.println(population.get(best.getLeft()));
         }
         return population.get(best.getLeft());
     }
