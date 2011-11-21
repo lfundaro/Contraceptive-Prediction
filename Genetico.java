@@ -11,9 +11,10 @@ public class Genetico {
         try {
             Parser p = new Parser(args[0]);
             ArrayList<int[]> trainingData = p.go();
-            GABIL g = new GABIL(trainingData, 500, 100, 0.005, 0.6);
-            g.go();
-
+            GABIL g = new GABIL(trainingData, 500, 1/5, 0.005, 0.6);
+            int[] bestHyp = g.go();
+            System.out.println("Best hypothesis");
+            System.out.println(bestHyp);
         }
         catch(ArrayIndexOutOfBoundsException e) {
             System.out.println("Especificar archivo de entrada.");
