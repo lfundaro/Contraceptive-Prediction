@@ -14,7 +14,7 @@ public class Genetico {
             GABIL g = new GABIL(trainingData, 10, 0.5, 0.0001, 1.0);
         }
         catch(ArrayIndexOutOfBoundsException e) {
-            System.out.println("Especificar archivo de entrada: "+e);
+            System.out.println("Especificar archivo de entrada.");
         }
         
     }
