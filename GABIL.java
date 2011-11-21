@@ -2,6 +2,7 @@
 package genetico;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Random;
 
@@ -194,15 +195,26 @@ public class GABIL {
     
     private ArrayList<int[]> rouletteSelection(int prop, double[] ftn, 
             ArrayList<int[]> population) {
+        return new ArrayList<int[]>();
+    }
+    
+    private ArrayList<Pair> computeProbs(double[] ftn) {
         // Suma de todos los fitness
         double sum = 0.0;
         for(int i = 0; i < ftn.length; i++)
             sum += ftn[i];
         // Probabilidad de cada hipótesis
         double[] pr = new double[ftn.length];
-        for(int i = 0; i < pr.length; i++) 
+        for(int i = 0; i < pr.length; i++)
             pr[i] = ftn[i] / sum;
-        ArrayList<Pair> prs = new ArrayList<Pair>(population.size());
+        ArrayList<Pair> Pr = new ArrayList<Pair>(ftn.length);
+        Pair pip;
+        for(int i = 0; i < ftn.length; i++) {
+            pip = new Pair(i, ftn[i]);
+            Pr.add(pip);
+        }
+        Collections.sort(Pr, new PairComparator());
+        return Pr;
     }
 
     private ArrayList<int []> crossover(int tamano_pop, double[] ftn,
@@ -224,6 +236,7 @@ public class GABIL {
         while (max(ftn) < fitness_threshold) {
             // Crear nueva generación
             int prop = (int) ((1-r)*p); 
+            ArrayList<Pair> Pr = computeProbs(ftn);
             ArrayList<int[]> Ps = rouletteSelection(prop, ftn, population);
         }
         return finalHyp;
