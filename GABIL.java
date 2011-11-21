@@ -246,6 +246,98 @@ public class GABIL {
         Collections.sort(Pr, new PairComparator());
         return Pr;
     }
+
+    public static int random(int min, int max) {
+        max = max + 1 ;
+        return min + (int)(Math.random() * (max - min));
+    }
+
+    public int[] getds(int x1, int x2, int rule_size){
+        
+        int[] ds = new int[2];
+
+        if (x1<=rule_size)
+            ds[0]=x1;
+        else
+            ds[0]=x1%rule_size;
+
+        if (x2<=rule_size)
+            ds[1]=x2;
+        else
+            ds[1]=x2%rule_size;
+
+        return ds;
+        
+    }
+
+    private ArrayList<int []> crossover(int tamano_pop, double[] ftn,
+            ArrayList<int[]> population, ArrayList<int[]> Ps){
+
+        // Seleccionar aleatoriamente un par de padres
+        int[] p1 = null;
+        int[] p2 = null;
+
+        // Se calcula el par de corte para el primer padre
+        int x1 = random(1,p1.length);
+        int x2 = random(x1,p1.length);
+
+        int[] ds = getds(x1,x2,Parser.REP_SIZE);
+
+        int[] ds_b = {0,0};
+        int x1_b = 0;
+        int x2_b = 0;
+        // Se calcula el par de corte para el segundo padre
+        // y se valida hasta que sea correcto
+        while (ds_b[0]!=ds[0] || ds_b[1]!=ds[1] ){
+            x1_b = random(1,p2.length);
+            x2_b = random(x1_b,p2.length);
+            ds_b = getds(x1_b,x2_b,Parser.REP_SIZE);
+        }
+
+        // Se inicializan los nuevos hijos
+        int [] hijo1 = new int[x1+(x2_b-x1_b)+p1.length-x2];
+        int [] hijo2 = new int[x1_b+(x2-x1)+p2.length-x2_b];
+
+        int conth1 = 0;
+        int conth2 = 0;
+        // Se llenan los hijos
+
+        // Hijo1
+        for (int i = 0; i<x1 ; i++){
+            hijo1[conth1] = p1[i];
+            conth1++;
+        }
+        for (int i = x1_b; i<x2_b ; i++){
+            hijo1[conth1] = p2[i];
+            conth1++;
+        }
+        for (int i = x2; i<p1.length ; i++){
+            hijo1[conth1] = p1[i];
+            conth1++;
+        }
+
+        // Hijo2
+        for (int i = 0; i<x1_b ; i++){
+            hijo2[conth2] = p2[i];
+            conth2++;
+        }
+        for (int i = x1; i<x2 ; i++){
+            hijo2[conth2] = p1[i];
+            conth2++;
+        }
+        for (int i = x2_b; i<p2.length ; i++){
+            hijo2[conth2] = p2[i];
+            conth2++;
+        }
+
+        // Se agregan los hijos a la nueva poblacion
+        Ps.add(hijo1);
+        Ps.add(hijo2);
+
+        // Retornamos la nueva poblacion completa
+        return Ps;
+
+    }
     
     private void mutate(ArrayList<int[]> Ps) {
         int n = (int) (m*Ps.size() / 100);
@@ -291,14 +383,7 @@ public class GABIL {
             int prop = (int) ((1-r)*p);
             ArrayList<Pair> Pr = computeProbs(ftn);
             ArrayList<int[]> Ps = rouletteSelection(prop, population, Pr);
-            
-            
-            
-            
-            
-            
-            
-            
+            Ps = crossover(p, ftn, population, Ps);
             mutate(Ps);
         }
         return finalHyp;
