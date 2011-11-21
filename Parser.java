@@ -25,6 +25,7 @@ public class Parser {
     public static final int WORK_SIZE = 2;
     public static final int MEX_SIZE = 2;
     public static final int MTH_SIZE = 1;
+    public static final int FIELDS = 10;
 
     public Parser(String fname) {
         filePath = fname;
