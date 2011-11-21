@@ -204,7 +204,19 @@ public class GABIL {
             pr[i] = ftn[i] / sum;
         ArrayList<Pair> prs = new ArrayList<Pair>(population.size());
     }
-    
+
+    private ArrayList<int []> crossover(int tamano_pop, double[] ftn,
+            ArrayList<int[]> population, ArrayList<int[]> new_population){
+
+        // Seleccionar aleatoriamente un par de padres
+
+        
+
+        // Retornamos la nueva poblacion completa
+        return new_population;
+
+    }
+
     public int[] go() {
         int[] finalHyp = new int[20];
         ArrayList<int[]> population = initPop();
