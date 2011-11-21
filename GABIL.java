@@ -29,37 +29,41 @@ public class GABIL {
     private ArrayList<int[]> initPop() {
         // Generación de una hipótesis aleatoria
         ArrayList<int[]> pool = new ArrayList<int[]>(p);
-        Random gen = new Random();
         int[] hyp;
-        int index;
         for(int i = 0; i < p; i++) {
-            index = 0;
-            hyp = new int[Parser.REP_SIZE];
+            hyp = new int[Parser.REP_SIZE*2]; // Para generar hyp con dos reglas.
             init(hyp);
-            // Edad
-            index = genField(hyp, gen, index, index + Parser.AGE_SIZE, "AGE");
-            // Educación de la esposa
-            index = genField(hyp, gen, index, index + Parser.CAT_SIZE, "CAT");
-            // Educación del esposo
-            index = genField(hyp, gen, index, index + Parser.CAT_SIZE, "CAT");
-            // Número de hijos
-            index = genField(hyp, gen, index, index + Parser.NCHILD_SIZE,
-                    "CHILD");
-            // Religión
-            index = genField(hyp, gen, index, index + Parser.REL_SIZE, "REL");
-            // Situación trabajo esposa
-            index = genField(hyp, gen, index, index + Parser.WORK_SIZE, "WORK");
-            // Situación del esposo
-            index = genField(hyp, gen, index, index + Parser.CAT_SIZE, "CAT");
-            // Estándar de vida
-            index = genField(hyp, gen, index, index + Parser.CAT_SIZE, "CAT");
-            // Exposición al ambiente
-            index = genField(hyp, gen, index, index + Parser.MEX_SIZE, "MEX");
-            // Método anticonceptivo
-            genMethodField(hyp, gen, index, index + Parser.MTH_SIZE);
+            generators(hyp, 0, Parser.REP_SIZE);
+            generators(hyp, Parser.REP_SIZE, Parser.REP_SIZE*2);
             pool.add(hyp);
         }
         return pool;
+    }
+    
+    private void generators(int[] hyp, int l, int h) {
+        int index = l;
+        Random gen = new Random();
+        // Edad
+        index = genField(hyp, gen, index, index + Parser.AGE_SIZE, "AGE");
+        // Educación de la esposa
+        index = genField(hyp, gen, index, index + Parser.CAT_SIZE, "CAT");
+        // Educación del esposo
+        index = genField(hyp, gen, index, index + Parser.CAT_SIZE, "CAT");
+        // Número de hijos
+        index = genField(hyp, gen, index, index + Parser.NCHILD_SIZE,
+                "CHILD");
+        // Religión
+        index = genField(hyp, gen, index, index + Parser.REL_SIZE, "REL");
+        // Situación trabajo esposa
+        index = genField(hyp, gen, index, index + Parser.WORK_SIZE, "WORK");
+        // Situación del esposo
+        index = genField(hyp, gen, index, index + Parser.CAT_SIZE, "CAT");
+        // Estándar de vida
+        index = genField(hyp, gen, index, index + Parser.CAT_SIZE, "CAT");
+        // Exposición al ambiente
+        index = genField(hyp, gen, index, index + Parser.MEX_SIZE, "MEX");
+        // Método anticonceptivo
+        genMethodField(hyp, gen, index, index + Parser.MTH_SIZE);
     }
     
     private void genMethodField(int[] hyp, Random gen, int l, int h) {
@@ -196,13 +200,20 @@ public class GABIL {
         int valid = 0;
         // Check si se hace match con Method
         if (l != 0 && (l % 35 == 0)) {
-            return (example[l] == hyp[l]);
+            return (example[l % 36] == hyp[l]);
         } else {
             for(int i = l; i < h; i++) {
-                valid |= (hyp[i] & example[i]);
+                valid |= (hyp[i] & example[i % 36]);
             }
         }
         return valid == 1;
+    }
+    
+    public void printHyp(int[] h) {
+        for(int i = 0; i < h.length; i++) {
+            System.out.print(h[i]);
+        }
+        System.out.println("");
     }
     
     private Pair max(double[] ftn) {
@@ -236,7 +247,7 @@ public class GABIL {
             AccN.add(tmp);
             acc += aux.getRight();
         }
-        System.out.println("Acumulador = "+acumulador);
+//        System.out.println("Acumulador = "+acumulador);
 //        System.out.println("Size' = "+AccN.size());
         double g;
         for(int i = 0; i < prop; i++) {
@@ -250,9 +261,12 @@ public class GABIL {
                     Ps.add(population.get(tmp.getLeft()));
                     break;
                 }
-                System.out.println("Size PS = "+Ps.size());
+//                System.out.println("Size PS = "+Ps.size());
+//                System.out.println("Prop = "+prop);
             }
         }
+        System.out.println("prop = "+prop);
+        System.out.println("Ps.length = "+Ps.size());
         return Ps;
     }
     
@@ -311,6 +325,7 @@ public class GABIL {
             int[] p2 = padres.get(1);
 
             // Se calcula el par de corte para el primer padre
+            System.out.println("p1.length ="+p1.length);
             int x1 = random(1,p1.length);
             int x2 = random(x1,p1.length);
 
@@ -321,15 +336,29 @@ public class GABIL {
             int x2_b = 0;
             // Se calcula el par de corte para el segundo padre
             // y se valida hasta que sea correcto
-            while (ds_b[0]!=ds[0] || ds_b[1]!=ds[1] ){
+            // Primer d
+            while (ds_b[0]!=ds[0]) {
                 x1_b = random(1,p2.length);
-                x2_b = random(x1_b,p2.length);
-                ds_b = getds(x1_b,x2_b,Parser.REP_SIZE);
+                ds_b = getds(x1_b,x2,Parser.REP_SIZE);
             }
+                    
+            while (ds_b[1]!=ds[1] ){
+                x2_b = random(x1_b,p2.length);
+                ds_b = getds(x1,x2_b,Parser.REP_SIZE);
+            }
+            
+//            while (ds_b[0]!=ds[0] || ds_b[1]!=ds[1] ){
+//                x1_b = random(1,p2.length);
+//                x2_b = random(x1_b,p2.length);
+//                ds_b = getds(x1_b,x2_b,Parser.REP_SIZE);
+//            }
 
             // Se inicializan los nuevos hijos
-            int [] hijo1 = new int[x1+(x2_b-x1_b)+p1.length-x2];
-            int [] hijo2 = new int[x1_b+(x2-x1)+p2.length-x2_b];
+            System.out.println((x1+1)+(x2_b-x1_b+1)+p1.length);
+            System.out.println("x2= "+x2);
+            System.out.println("x1 ="+x1);
+            int [] hijo1 = new int[(x1+1)+(x2_b-x1_b+1)+p1.length-x2];
+            int [] hijo2 = new int[(x1_b+1)+(x2-x1+1)+p2.length-x2_b];
 
             int conth1 = 0;
             int conth2 = 0;
@@ -459,15 +488,23 @@ public class GABIL {
         Pair best;
         while ((best = max(ftn)).getRight() < fitness_threshold) {
             // Crear nueva generación
-            int prop = 500;
+            printHyp(population.get(best.getLeft()));
+            System.out.println("Fitness best = "+best.getRight());
+//            int prop = 500;
             System.out.println("r = "+r);
-            double prop2 = ((1.0-r)*(double) p);
-            System.out.println("Prop = "+prop2);
+            int prop = (int) ((1.0-r)*(double) p);
+//            System.out.println("Prop = "+prop2);
             ArrayList<Pair> Pr = computeProbs(ftn);
+            System.out.println("Roulette before");
             ArrayList<int[]> Ps = rouletteSelection(prop, population, Pr);
+            System.out.println("Roulette after");
             int n_cross = (int) ((r*p)/2);
+            System.out.println("Crossover before");
             Ps = crossover(n_cross, population, ftn, Ps, Pr);
+            System.out.println("Crossover after");
+            System.out.println("Mutate before");
             mutate(Ps);
+            System.out.println("Mutate after");
             population = Ps;
             ftn = fitness(population);
 //            System.out.println("NewFitness");
