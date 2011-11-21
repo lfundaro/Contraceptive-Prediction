@@ -390,7 +390,7 @@ public class GABIL {
                 else {
                     candidate[whichBit] = (candidate[whichBit] == 0) ? 1 : 0;
                     // Verificar que el flip no haya dañado la regla.
-                    if (true /*check validez de regla*/) {
+                    if (validHyp(candidate)) {
                         break;
                     }
                     else {
