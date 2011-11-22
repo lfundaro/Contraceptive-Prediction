@@ -238,11 +238,9 @@ public class GABIL {
         Pair aux;
         ArrayList<Pair> AccN = new ArrayList<Pair>(Pr.size());
         Iterator<Pair> it = Pr.iterator();
-        double acumulador = 0.0;
         while (it.hasNext()) {
             tmp = (it.next()).clone();
-            aux = tmp.clone();
-            acumulador += tmp.getRight(); 
+            aux = tmp.clone(); 
             tmp.setRight(tmp.getRight() + acc);
             AccN.add(tmp);
             acc += aux.getRight();
@@ -253,7 +251,7 @@ public class GABIL {
 //        System.out.println("Size' = "+AccN.size());
         double g;
         for(int i = 0; i < prop; i++) {
-            g = gen.nextDouble()*(acumulador); // Rango [0,1]
+            g = gen.nextDouble()*(acc); // Rango [0,1]
             it = AccN.iterator();
             while (it.hasNext()) {
                 tmp = it.next();
