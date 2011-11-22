@@ -176,6 +176,20 @@ public class GABIL {
             // Calcular fitness overall de la hipótesis
             overall = ((((double) acc) / ((double) trainingData.size())) 
                     / ((double) nrules));
+
+            /*
+             * Penalizacion por tamano de la hipotesis
+             * Si hay una regla no hay penalizacion
+             * Si hay dos reglas hay -5% de penalizacion
+             * Si hay tres reglas hay -10% de penalizacion
+             * Si hay cuatro reglas hay -15% de penalizacion
+             * Si hay cinco reglas hay -20% de penalizacion
+             * Y asi sucesivamente
+            */
+            double pen = (((nrules-1)/10)/2)*overall;
+            overall -= pen ;
+
+
             // Asignar a la i-ésima hipótesis su valor fitness
             ftn[cnt] = overall;
             cnt++;
