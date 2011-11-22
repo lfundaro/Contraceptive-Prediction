@@ -14,7 +14,7 @@ public class Genetico {
             Parser p = new Parser(args[0]);
             ArrayList<int[]> trainingData = p.go();
 
-            GABIL g = new GABIL(trainingData, 500, 3.0/5.0, 0.005, 0.6);
+            GABIL g = new GABIL(trainingData, 2000, 1.0/5.0, 0.5, 0.6);
 //            Random gen = new Random();
 //            for(int i = 0; i < 5000; i++) {
 //                System.out.println( (int)  (1 + gen.nextDouble()*(3)));

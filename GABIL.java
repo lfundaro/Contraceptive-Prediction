@@ -174,8 +174,8 @@ public class GABIL {
                 index += Parser.REP_SIZE;
             }
             // Calcular fitness overall de la hipótesis
-            overall = (((double) acc) / ((double) trainingData.size()) 
-                    / nrules);
+            overall = ((((double) acc) / ((double) trainingData.size())) 
+                    / ((double) nrules));
             // Asignar a la i-ésima hipótesis su valor fitness
             ftn[cnt] = overall;
             cnt++;
@@ -206,7 +206,7 @@ public class GABIL {
         int valid = 0;
         // Check si se hace match con Method
         if (l != 0 && (l % 35 == 0)) {
-            return (example[l % 36] == hyp[l]);
+            return (example[example.length - 1] == hyp[l]);
         } else {
             for(int i = l; i < h; i++) {
                 valid |= (hyp[i] & example[i % 36]);
@@ -417,7 +417,6 @@ public class GABIL {
             }
 
         }
-
         // Retornamos la nueva poblacion completa
         return Ps;
 
@@ -495,6 +494,7 @@ public class GABIL {
     public int[] go() {
         ArrayList<int[]> population = initPop();
         double[] ftn = fitness(population);
+        System.out.println("Fitness");
         for(int i = 0; i < ftn.length; i++)
             System.out.print(ftn[i]+" ");
         System.out.println("");
