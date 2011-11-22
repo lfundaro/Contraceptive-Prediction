@@ -14,11 +14,7 @@ public class Genetico {
             Parser p = new Parser(args[0]);
             ArrayList<int[]> trainingData = p.go();
 
-//            GABIL g = new GABIL(trainingData, 500, 3.0/5.0, 0.005, 0.6);
-            int c = 1 & 1;
-            int valid = 0;
-            valid &= (c & 1);
-            System.out.println(valid);
+            GABIL g = new GABIL(trainingData, 5000, 3.0/5.0, 0.05, 0.6);
 //            Random gen = new Random();
 //            for(int i = 0; i < 5000; i++) {
 //                System.out.println( (int)  (1 + gen.nextDouble()*(3)));
@@ -39,9 +35,9 @@ public class Genetico {
 //                p.test(k2);
 //                System.out.println("-----------------------------");
 //            }
-//            int[] bestHyp = g.go();
-//            System.out.println("Best hypothesis");
-//            System.out.println(bestHyp);
+            int[] bestHyp = g.go();
+            System.out.println("Best hypothesis");
+            System.out.println(bestHyp);
 //        }
 //        catch(ArrayIndexOutOfBoundsException e) {
 //            System.out.println("Especificar archivo de entrada."+e);
