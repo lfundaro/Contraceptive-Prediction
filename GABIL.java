@@ -16,13 +16,15 @@ public class GABIL {
     double r;   // fracción de la población que será reemplazada.
     double m;   // Tasa de mutación.
     double fitness_threshold;
+    int ruleSize;
     
     public GABIL(ArrayList<int[]> training, int p, double r, double m,
-            double fthld) {
+            double fthld, int ruleSize) {
         trainingData = training;
         this.p = p;
         this.r = r;
         this.m = m;
+        this.ruleSize = ruleSize;
         fitness_threshold = fthld;
     }
     
@@ -30,11 +32,17 @@ public class GABIL {
         // Generación de una hipótesis aleatoria
         ArrayList<int[]> pool = new ArrayList<int[]>(p);
         int[] hyp;
+        int index;
         for(int i = 0; i < p; i++) {
-            hyp = new int[Parser.REP_SIZE*2]; // Para generar hyp con dos reglas.
+            index = 0;
+            hyp = new int[Parser.REP_SIZE*this.ruleSize]; // Para generar hyp con n reglas.
             init(hyp);
-            generators(hyp, 0, Parser.REP_SIZE);
-            generators(hyp, Parser.REP_SIZE, Parser.REP_SIZE*2);
+            for(int j = 1; j <= this.ruleSize; j++) {
+                generators(hyp, index, Parser.REP_SIZE*j);
+                index += Parser.REP_SIZE;
+            }
+//            generators(hyp, 0, Parser.REP_SIZE);
+//            generators(hyp, Parser.REP_SIZE, Parser.REP_SIZE*2);
             pool.add(hyp);
         }
         return pool;
@@ -77,7 +85,7 @@ public class GABIL {
     
     private int genField(int[] hyp, Random gen, int l, int h, String type) {
         double g = gen.nextDouble();
-        g = 1;
+//        g = 1;
         while (!validGen(hyp, l, h)) {
             if (g <= 0.5) {
                 // Random bit-a-bit
@@ -222,10 +230,13 @@ public class GABIL {
                 }
                 if (success) {acc++;}
             }
+//            System.out.println("training data size = "+trainingData.size());
+//            if (acc > 20)
+//                System.out.println("Acc = "+acc);
             // Ṕrobar cada regla contra el training set.
             
             // Calcular fitness overall de la hipótesis
-            overall = (((double) acc*(100.0)) / ((double) trainingData.size()));
+            overall = (((double) acc) / ((double) trainingData.size()));
                  //   / (double) nrules;
             overall = Math.pow(overall, 2);
             
@@ -421,8 +432,8 @@ public class GABIL {
 
         for (int i_cross=0; i_cross<n_cross; i_cross++){
 
-            ArrayList<int []> padres = rouletteSelection(2, population, Pr);
-//            ArrayList<int[]> padres = tournamentSelection(2, population, Pr);
+//            ArrayList<int []> padres = rouletteSelection(2, population, Pr);
+            ArrayList<int[]> padres = tournamentSelection(2, population, Pr);
 
             // Seleccionar probabilisticamente un par de padres (rueda de ruleta)
             int[] p1 = padres.get(0);
@@ -526,6 +537,7 @@ public class GABIL {
     
     private void mutate(ArrayList<int[]> Ps) {
         int n = (int) (m*Ps.size() / 100);
+        System.out.println("Mutate n = "+n);
         Random gen = new Random();
         int indexC;
         int whichBit;
@@ -605,8 +617,8 @@ public class GABIL {
             // Crear nueva generación
             int prop = (int) ((1.0-r)*(double) p);
             ArrayList<Pair> Pr = computeProbs(ftn);
-            //ArrayList<int[]> Ps = rouletteSelection(prop, population, Pr);
-            ArrayList<int[]> Ps = tournamentSelection(prop, population, Pr);
+            ArrayList<int[]> Ps = rouletteSelection(prop, population, Pr);
+//            ArrayList<int[]> Ps = tournamentSelection(prop, population, Pr);
             int n_cross = (int) ((r*p)/2);
             Ps = crossover(n_cross, population, ftn, Ps, Pr);
             mutate(Ps);
