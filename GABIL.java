@@ -606,13 +606,18 @@ public class GABIL {
             population = Ps;
             ftn = fitness(population);
             
-//            best = max(ftn);
             System.out.println("Max: "+max(ftn));
             System.out.print("Cantidad de 1s en la mejor hipotesis: ");
             howmany1s(population.get(best.getLeft()));
             printHyp(population.get(best.getLeft()));
             System.out.println("---");
+            
         }
+        System.out.println("Max: "+max(ftn));
+        System.out.print("Cantidad de 1s en la mejor hipotesis: ");
+        howmany1s(population.get(best.getLeft()));
+        printHyp(population.get(best.getLeft()));
+        System.out.println("---");
         return population.get(best.getLeft());
     }
 }

@@ -18,23 +18,23 @@ public class Genetico {
 //                System.out.print(prueba[i]);
 //            System.out.println();
 //            int[] cprueba = {1,0,1,1,1,1,1,0,1,0,0,0,0,1,0,0,0,0,1,0,0,1,0,0,1,0,1,0,0,0,0,1,0,1,0,1};
-            int[] clasificador = {0,0,1,1,0,0,1,1,1,1,1,0,0,1,1,0,1,1,0,0,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,0,0,0,1,1,0,0,1,1,1,1,1,0,1,1,0,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,0,0,1,0,0,0,0,0,1,1,1,1,0,1,1,1,1,1,0,0,1,1,0,1,0,1,0,0,0,1,0,1,1,1,1,1,0,0,1,0,1,1,1,1,0,0,1,1,1,1,1,0,1,0,1,0,1,1,0,1,1,1,1,1,0,1,0,1,1,0,1,3,0,1,0,0,0,1,0,1,1,1,1,1,0,0,1,1,0,1,0,0,0,1,0,1,1,1,1,1,0,0,1,1,1,1,1,1,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,1,1,0,1,0,0,1,1,0,1,0,1,0,0,1,1,1,0,1,0,2,1,1,1,0,0,0,0,1,1,1,1,0,1,0,0,1,1,1,0,1,1,1,0,1,0,0,1,0,0,0,0,1,1,0,1,1,1,0,1,1,0,0,0,0,1,0,1,1,0,1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,0,2,0,0,0,0,1,0,0,1,1,0,0,0,1,1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,};
-            GABIL g = new GABIL(trainingData, 5000, 4.0/5.0, 0.04, 0.7,3);
+            int[] clasificador = {0,0,1,1,0,0,1,1,1,1,1,0,0,1,1,0,1,1,0,0,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,0,0,0,1,1,0,0,1,1,1,1,1,0,1,1,0,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,0,0,1,0,0,0,0,0,1,1,1,1,0,1,1,1,1,1,0,0,1,1,0,1,0,1,0,0,0,1,0,1,1,1,1,1,0,0,1,0,1,1,1,1,0,0,1,1,1,1,1,0,1,0,1,0,1,1,0,1,1,1,1,1,0,1,0,1,1,0,1,3,0,1,0,0,0,1,0,1,1,1,1,1,0,0,1,1,0,1,0,0,0,1,0,1,1,1,1,1,0,0,1,1,1,1,1,1,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,1,1,0,1,0,0,1,1,0,1,0,1,0,0,1,1,1,0,1,0,2,1,1,1,0,0,0,0,1,1,1,1,0,1,0,0,1,1,1,0,1,1,1,0,1,0,0,1,0,0,0,0,1,1,0,1,1,1,0,1,1,0,0,0,0,1,0,1,1,0,1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,0,2,0,0,0,0,1,0,0,1,1,0,0,0,1,1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1};
+            GABIL g = new GABIL(trainingData, 5000, 4.0/5.0, 0.04, 0.8,3);
 //            if (g.testAgainstTS(prueba, 0, cprueba)) {
 //                System.out.println("It works !");
 //            }
 //            else {
 //                System.out.println("It doesn't :(");
 //        
-//            int[] bestHyp = g.go();
-//            System.out.println("Best hypothesis");
+            int[] bestHyp = g.go();
+            System.out.println("Best hypothesis");
 //            System.out.println(bestHyp);
 //             Chequear solución
             
-            Parser t = new Parser(args[0]);
+            Parser t = new Parser(args[1]);
             ArrayList<int[]> testData = t.goBalanced();
             
-            int nrules = clasificador.length / Parser.REP_SIZE;
+            int nrules = bestHyp.length / Parser.REP_SIZE;
             int acc = 0;
             Iterator<int[]> trIt = testData.iterator();
             while (trIt.hasNext()) {
@@ -43,7 +43,7 @@ public class Genetico {
                 int index = 0;
                 boolean success = false;
                 while (!success && i < nrules) {
-                    if(success = testAgainstTS(clasificador, index, tHyp)) break;
+                    if(success = testAgainstTS(bestHyp, index, tHyp)) break;
                     i++;
                     index += Parser.REP_SIZE;
                 }
@@ -55,6 +55,7 @@ public class Genetico {
             // Ṕrobar cada regla contra el training set.
             
             // Calcular fitness overall de la hipótesis
+            System.out.println("Acumulador = "+acc);
             double overall = (((double) acc) / ((double) testData.size()));
             
             System.out.println("Clasificados = "+overall);
