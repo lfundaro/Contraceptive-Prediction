@@ -34,7 +34,7 @@ public class Parser {
         filePath = fname;
     }
 
-    public ArrayList<int[]> go() {
+    public ArrayList<int[]> goBalanced() {
         ArrayList<int[]> pool = new ArrayList<int[]>();
         try {
             BufferedReader in = new BufferedReader(new FileReader(filePath));
@@ -43,6 +43,10 @@ public class Parser {
             int[] ex;
             int tmp;
             int maxIndex;
+            int n1 = 0;
+            int n2 = 0;
+            int n3 = 0;
+            int maxPerChoice = 220;
 
             while ((nextLine = in.readLine()) != null) {
                 maxIndex = 0;
@@ -79,7 +83,16 @@ public class Parser {
                 // Método anticonceptivo
                 tmp = Integer.parseInt(tokenized[9]);
                 ex[maxIndex] = tmp;
-                pool.add(ex);
+
+                // Checking the number of elements of this class
+                if (tmp == 1) n1++;
+                else if (tmp == 2) n2++;
+                else if (tmp == 3) n3++;
+
+                if (tmp == 1 && n1<=maxPerChoice) pool.add(ex);
+                else if (tmp == 2 && n2<=maxPerChoice) pool.add(ex);
+                else if (tmp == 3 && n3<=maxPerChoice) pool.add(ex);
+
             }
         } catch (FileNotFoundException fnf) {
             System.out.println("No se pudo encontrar el archivo: " + filePath);
@@ -88,6 +101,61 @@ public class Parser {
         }
         return pool;
     }
+
+//    public ArrayList<int[]> go() {
+//        ArrayList<int[]> pool = new ArrayList<int[]>();
+//        try {
+//            BufferedReader in = new BufferedReader(new FileReader(filePath));
+//            String nextLine;
+//            String[] tokenized;
+//            int[] ex;
+//            int tmp;
+//            int maxIndex;
+//
+//            while ((nextLine = in.readLine()) != null) {
+//                maxIndex = 0;
+//                tokenized = nextLine.split(",");
+//                ex = new int[REP_SIZE];
+//                init(ex);
+//                // Edad de la mujer
+//                tmp = Integer.parseInt(tokenized[0]);
+//                maxIndex = calcAge(ex, tmp, maxIndex);
+//                // Educación de la mujer
+//                tmp = Integer.parseInt(tokenized[1]);
+//                maxIndex = calCat(ex, tmp, maxIndex);
+//                // Educación del esposo
+//                tmp = Integer.parseInt(tokenized[2]);
+//                maxIndex = calCat(ex, tmp, maxIndex);
+//                // Número de hijos
+//                tmp = Integer.parseInt(tokenized[3]);
+//                maxIndex = numChildren(ex, tmp, maxIndex);
+//                // Religión de la mujer
+//                tmp = Integer.parseInt(tokenized[4]);
+//                maxIndex = calRel(ex, tmp, maxIndex);
+//                // Madre en situación de trabajo ?
+//                tmp = Integer.parseInt(tokenized[5]);
+//                maxIndex = calWorking(ex, tmp, maxIndex);
+//                // Ocupación del esposo
+//                tmp = Integer.parseInt(tokenized[6]);
+//                maxIndex = calCat(ex, tmp, maxIndex);
+//                // Estándar de vida
+//                tmp = Integer.parseInt(tokenized[7]);
+//                maxIndex = calCat(ex, tmp, maxIndex);
+//                // Exposición al ambiente
+//                tmp = Integer.parseInt(tokenized[8]);
+//                maxIndex = calMediaExp(ex, tmp, maxIndex);
+//                // Método anticonceptivo
+//                tmp = Integer.parseInt(tokenized[9]);
+//                ex[maxIndex] = tmp;
+//                pool.add(ex);
+//            }
+//        } catch (FileNotFoundException fnf) {
+//            System.out.println("No se pudo encontrar el archivo: " + filePath);
+//        } catch (IOException e) {
+//            System.out.println("Error de E/S: " + e);
+//        }
+//        return pool;
+//    }
 
     private void init(int[] ex) {
         for (int i = 0; i < ex.length; i++) {

@@ -225,9 +225,9 @@ public class GABIL {
             // Ṕrobar cada regla contra el training set.
             
             // Calcular fitness overall de la hipótesis
-            overall = (((double) acc*(100.0)) / ((double) trainingData.size()));
+            overall = (((double) acc) / ((double) trainingData.size()));
                  //   / (double) nrules;
-            overall = Math.pow(overall, 2);
+            //overall = Math.pow(overall, 2);
             
             /*
              * Penalizacion por tamano de la hipotesis

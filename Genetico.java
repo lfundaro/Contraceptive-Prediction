@@ -11,7 +11,7 @@ public class Genetico {
     public static void main(String[] args) {
 //        try {
             Parser p = new Parser(args[0]);
-            ArrayList<int[]> trainingData = p.go();
+            ArrayList<int[]> trainingData = p.goBalanced();
 
             GABIL g = new GABIL(trainingData, 2000, 1.0/5.0, 0.5, 0.9);
 //            Random gen = new Random();
@@ -39,7 +39,7 @@ public class Genetico {
             System.out.println(bestHyp);
             // Chequear solución
             Parser t = new Parser(args[1]);
-            ArrayList<int[]> testData = t.go();
+            ArrayList<int[]> testData = t.goBalanced();
             
 //            double overall;
 //            int nrules = bestHyp.length / Parser.REP_SIZE;
