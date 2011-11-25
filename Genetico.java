@@ -12,8 +12,20 @@ public class Genetico {
 //        try {
             Parser p = new Parser(args[0]);
             ArrayList<int[]> trainingData = p.go();
-
-            GABIL g = new GABIL(trainingData, 2000, 1.0/5.0, 0.5, 0.9);
+            
+//            int[] prueba = trainingData.get(0);
+//            for(int i = 0; i < prueba.length; i++)
+//                System.out.print(prueba[i]);
+//            System.out.println();
+//            int[] cprueba = {1,0,1,1,1,1,1,0,1,0,0,0,0,1,0,0,0,0,1,0,0,1,0,0,1,0,1,0,0,0,0,1,0,1,0,1};
+            
+            GABIL g = new GABIL(trainingData, 5000, 3.0/5.0, 0.02, 0.6,3);
+//            if (g.testAgainstTS(prueba, 0, cprueba)) {
+//                System.out.println("It works !");
+//            }
+//            else {
+//                System.out.println("It doesn't :(");
+//            }
 //            Random gen = new Random();
 //            for(int i = 0; i < 5000; i++) {
 //                System.out.println( (int)  (1 + gen.nextDouble()*(3)));
@@ -37,7 +49,7 @@ public class Genetico {
             int[] bestHyp = g.go();
             System.out.println("Best hypothesis");
             System.out.println(bestHyp);
-            // Chequear solución
+//             Chequear solución
             Parser t = new Parser(args[1]);
             ArrayList<int[]> testData = t.go();
             
