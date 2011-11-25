@@ -77,6 +77,7 @@ public class GABIL {
     
     private int genField(int[] hyp, Random gen, int l, int h, String type) {
         double g = gen.nextDouble();
+        g = 1;
         while (!validGen(hyp, l, h)) {
             if (g <= 0.5) {
                 // Random bit-a-bit
@@ -145,10 +146,11 @@ public class GABIL {
         return true;
     }
 
-    public void print_array(int[] a){
+    public void howmany1s(int[] a){
+        int n = 0;
         for (int i=0;i<a.length;i++)
-            System.out.print(a[i]);
-        System.out.println("");
+            if (a[i]==1) n++;
+        System.out.println((float)n/(float)a.length+"% ("+n+"/"+a.length+")");
     }
     
     private void init(int[] ex) {
@@ -176,6 +178,20 @@ public class GABIL {
             // Calcular fitness overall de la hipótesis
             overall = ((((double) acc) / ((double) trainingData.size())) 
                     / ((double) nrules));
+
+            /*
+             * Penalizacion por tamano de la hipotesis
+             * Si hay una regla no hay penalizacion
+             * Si hay dos reglas hay -5% de penalizacion
+             * Si hay tres reglas hay -10% de penalizacion
+             * Si hay cuatro reglas hay -15% de penalizacion
+             * Si hay cinco reglas hay -20% de penalizacion
+             * Y asi sucesivamente
+            */
+            double pen = (((nrules-1)/10)/2)*overall;
+            //overall -= pen ;
+
+
             // Asignar a la i-ésima hipótesis su valor fitness
             ftn[cnt] = overall;
             cnt++;
@@ -234,7 +250,29 @@ public class GABIL {
         Pair res = new Pair(index, h);
         return res;
     }
-    
+
+    private ArrayList<int[]> tournamentSelection(int quantity_to_return,
+            ArrayList<int[]> population, ArrayList<Pair> Pr) {
+
+        Random gen = new Random();
+        ArrayList<int[]> Ps = new ArrayList<int[]>(quantity_to_return);
+
+        // Binary Tournament
+        for (int i = 0; i<quantity_to_return; i++){
+            int x = random(0, population.size()-1);
+            int y = random(0, population.size()-1);
+            if (Pr.get(x).right>Pr.get(y).right){
+                Ps.add(population.get(x));
+            }
+            else{
+                Ps.add(population.get(y));
+            }
+        }
+        
+        return Ps;
+
+    }
+
     private ArrayList<int[]> rouletteSelection(int prop,
             ArrayList<int[]> population, ArrayList<Pair> Pr) {
         Random gen = new Random();
@@ -319,6 +357,7 @@ public class GABIL {
         for (int i_cross=0; i_cross<n_cross; i_cross++){
 
             ArrayList<int []> padres = rouletteSelection(2, population, Pr);
+//            ArrayList<int[]> padres = tournamentSelection(2, population, Pr);
 
             // Seleccionar probabilisticamente un par de padres (rueda de ruleta)
             int[] p1 = padres.get(0);
@@ -499,10 +538,10 @@ public class GABIL {
         Pair best;
         while ((best = max(ftn)).getRight() < fitness_threshold) {
             // Crear nueva generación
-            printHyp(population.get(best.getLeft()));
             int prop = (int) ((1.0-r)*(double) p);
             ArrayList<Pair> Pr = computeProbs(ftn);
-            ArrayList<int[]> Ps = rouletteSelection(prop, population, Pr);
+            //ArrayList<int[]> Ps = rouletteSelection(prop, population, Pr);
+            ArrayList<int[]> Ps = tournamentSelection(prop, population, Pr);
             int n_cross = (int) ((r*p)/2);
             Ps = crossover(n_cross, population, ftn, Ps, Pr);
             mutate(Ps);
@@ -510,7 +549,9 @@ public class GABIL {
             ftn = fitness(population);
             
             System.out.println("Max: "+max(ftn));
-            print_array(population.get(max(ftn).getLeft()));
+            System.out.print("Cantidad de 1s en la mejor hipotesis: ");
+            howmany1s(population.get(best.getLeft()));
+            printHyp(population.get(best.getLeft()));
             System.out.println("---");
         }
         return population.get(best.getLeft());
