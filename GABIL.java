@@ -238,7 +238,7 @@ public class GABIL {
             // Calcular fitness overall de la hipótesis
             overall = (((double) acc) / ((double) trainingData.size()));
                  //   / (double) nrules;
-            overall = Math.pow(overall, 2);
+            //overall = Math.pow(overall, 2);
             
             /*
              * Penalizacion por tamano de la hipotesis
@@ -274,25 +274,6 @@ public class GABIL {
         if (testOK) {classified = true;}
         return classified;
     }
-    
-//    private int testAgainstTS(int[] hyp, int l) {
-//        Iterator<int[]> it = trainingData.iterator();
-//        int classified = 0;
-//        while (it.hasNext()) {
-//            int[] example = it.next();
-//            int field = 0;
-//            int index = l;
-//            boolean testOK = true;
-//            while (testOK && field < Parser.FIELDS) {
-//                testOK &= matchRulePortion(hyp, example, index,
-//                        index + Parser.seq[field]);
-//                index += Parser.seq[field];
-//                field++;
-//            }
-//            if (testOK) {classified++;}
-//        }
-//        return classified;
-//    }
     
     private boolean matchRulePortion(int[] hyp, int[] example, int l, int h) {
         int valid = 0;
@@ -432,8 +413,8 @@ public class GABIL {
 
         for (int i_cross=0; i_cross<n_cross; i_cross++){
 
-//            ArrayList<int []> padres = rouletteSelection(2, population, Pr);
-            ArrayList<int[]> padres = tournamentSelection(2, population, Pr);
+            ArrayList<int []> padres = rouletteSelection(2, population, Pr);
+//            ArrayList<int[]> padres = tournamentSelection(2, population, Pr);
 
             // Seleccionar probabilisticamente un par de padres (rueda de ruleta)
             int[] p1 = padres.get(0);
@@ -625,6 +606,7 @@ public class GABIL {
             population = Ps;
             ftn = fitness(population);
             
+//            best = max(ftn);
             System.out.println("Max: "+max(ftn));
             System.out.print("Cantidad de 1s en la mejor hipotesis: ");
             howmany1s(population.get(best.getLeft()));
