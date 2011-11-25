@@ -158,6 +158,48 @@ public class GABIL {
             ex[i] = 0;
     }
     
+//    private double[] fitness(ArrayList<int[]> pool) {
+//        Iterator<int[]> it = pool.iterator();
+//        double[] ftn = new double[pool.size()];
+//        int cnt = 0;
+//        double overall = 0.0;
+//        while (it.hasNext()) {
+//            int[] hyp = it.next();
+//            int nrules = hyp.length / Parser.REP_SIZE;
+//            int i = 0;
+//            int acc = 0;
+//            int index = 0;
+//            // Ṕrobar cada regla contra el training set.
+//            while (i < nrules) {
+//                acc += testAgainstTS(hyp, index);
+//                i++;
+//                index += Parser.REP_SIZE;
+//            }
+//            // Calcular fitness overall de la hipótesis
+//            overall = (((double) acc*(100.0)) / ((double) trainingData.size())) 
+//                    / (double) nrules;
+//            overall = Math.pow(overall, 2);
+//
+//            /*
+//             * Penalizacion por tamano de la hipotesis
+//             * Si hay una regla no hay penalizacion
+//             * Si hay dos reglas hay -5% de penalizacion
+//             * Si hay tres reglas hay -10% de penalizacion
+//             * Si hay cuatro reglas hay -15% de penalizacion
+//             * Si hay cinco reglas hay -20% de penalizacion
+//             * Y asi sucesivamente
+//            */
+//            double pen = (((nrules-1)/10)/2)*overall;
+//            //overall -= pen ;
+//
+//
+//            // Asignar a la i-ésima hipótesis su valor fitness
+//            ftn[cnt] = overall;
+//            cnt++;
+//        }
+//        return ftn;
+//    }
+    
     private double[] fitness(ArrayList<int[]> pool) {
         Iterator<int[]> it = pool.iterator();
         double[] ftn = new double[pool.size()];
@@ -166,19 +208,27 @@ public class GABIL {
         while (it.hasNext()) {
             int[] hyp = it.next();
             int nrules = hyp.length / Parser.REP_SIZE;
-            int i = 0;
             int acc = 0;
-            int index = 0;
-            // Ṕrobar cada regla contra el training set.
-            while (i < nrules) {
-                acc += testAgainstTS(hyp, index);
-                i++;
-                index += Parser.REP_SIZE;
+            Iterator<int[]> trIt = trainingData.iterator();
+            while (trIt.hasNext()) {
+                int[] tHyp = trIt.next();
+                int i = 0;
+                int index = 0;
+                boolean success = false;
+                while (!success && i < nrules) {
+                    if(success = testAgainstTS(hyp, index, tHyp)) break;
+                    i++;
+                    index += Parser.REP_SIZE;
+                }
+                if (success) {acc++;}
             }
+            // Ṕrobar cada regla contra el training set.
+            
             // Calcular fitness overall de la hipótesis
-            overall = ((((double) acc) / ((double) trainingData.size())) 
-                    / ((double) nrules));
-
+            overall = (((double) acc*(100.0)) / ((double) trainingData.size()));
+                 //   / (double) nrules;
+            overall = Math.pow(overall, 2);
+            
             /*
              * Penalizacion por tamano de la hipotesis
              * Si hay una regla no hay penalizacion
@@ -187,36 +237,51 @@ public class GABIL {
              * Si hay cuatro reglas hay -15% de penalizacion
              * Si hay cinco reglas hay -20% de penalizacion
              * Y asi sucesivamente
-            */
+             */
             double pen = (((nrules-1)/10)/2)*overall;
             //overall -= pen ;
-
-
+            
+            
             // Asignar a la i-ésima hipótesis su valor fitness
             ftn[cnt] = overall;
             cnt++;
         }
         return ftn;
     }
-    
-    private int testAgainstTS(int[] hyp, int l) {
-        Iterator<int[]> it = trainingData.iterator();
-        int classified = 0;
-        while (it.hasNext()) {
-            int[] example = it.next();
-            int field = 0;
-            int index = l;
-            boolean testOK = true;
-            while (testOK && field < Parser.FIELDS) {
-                testOK &= matchRulePortion(hyp, example, index,
-                        index + Parser.seq[field]);
-                index += Parser.seq[field];
-                field++;
-            }
-            if (testOK) {classified++;}
+        
+    private boolean testAgainstTS(int[] hyp, int l, int[] tHyp) {
+        boolean classified = false;
+        int field = 0;
+        int index = l;
+        boolean testOK = true;
+        while (testOK && field < Parser.FIELDS) {
+            testOK &= matchRulePortion(hyp, tHyp, index,
+                    index + Parser.seq[field]);
+            index += Parser.seq[field];
+            field++;
         }
+        if (testOK) {classified = true;}
         return classified;
     }
+    
+//    private int testAgainstTS(int[] hyp, int l) {
+//        Iterator<int[]> it = trainingData.iterator();
+//        int classified = 0;
+//        while (it.hasNext()) {
+//            int[] example = it.next();
+//            int field = 0;
+//            int index = l;
+//            boolean testOK = true;
+//            while (testOK && field < Parser.FIELDS) {
+//                testOK &= matchRulePortion(hyp, example, index,
+//                        index + Parser.seq[field]);
+//                index += Parser.seq[field];
+//                field++;
+//            }
+//            if (testOK) {classified++;}
+//        }
+//        return classified;
+//    }
     
     private boolean matchRulePortion(int[] hyp, int[] example, int l, int h) {
         int valid = 0;
