@@ -144,6 +144,12 @@ public class GABIL {
 
         return true;
     }
+
+    public void print_array(int[] a){
+        for (int i=0;i<a.length;i++)
+            System.out.print(a[i]);
+        System.out.println("");
+    }
     
     private void init(int[] ex) {
         for(int i = 0; i < ex.length; i++)
@@ -245,8 +251,7 @@ public class GABIL {
             AccN.add(tmp);
             acc += aux.getRight();
         }
-        System.out.println("Accumulated");
-        System.out.println(AccN);
+        //System.out.println("Acumulador = "+acumulador);
 //        System.out.println("Acumulador = "+acumulador);
 //        System.out.println("Size' = "+AccN.size());
         double g;
@@ -265,8 +270,8 @@ public class GABIL {
 //                System.out.println("Prop = "+prop);
             }
         }
-        System.out.println("prop = "+prop);
-        System.out.println("Ps.length = "+Ps.size());
+//        System.out.println("prop = "+prop);
+//        System.out.println("Ps.length = "+Ps.size());
         return Ps;
     }
     
@@ -290,25 +295,20 @@ public class GABIL {
     }
 
     public static int random(int min, int max) {
-        max = max + 1 ;
+        max = max + 1;
         return min + (int)(Math.random() * (max - min));
     }
 
-    public int[] getds(int x1, int x2, int rule_size){
-        
-        int[] ds = new int[2];
+    public int getd(int x, int rule_size){
 
-        if (x1<=rule_size)
-            ds[0]=x1;
+        int d = 0;
+
+        if (x<rule_size)
+            d=x;
         else
-            ds[0]=x1%rule_size;
+            d=x%rule_size;
 
-        if (x2<=rule_size)
-            ds[1]=x2;
-        else
-            ds[1]=x2%rule_size;
-
-        return ds;
+        return d;
         
     }
 
@@ -324,41 +324,52 @@ public class GABIL {
             int[] p1 = padres.get(0);
             int[] p2 = padres.get(1);
 
-            // Se calcula el par de corte para el primer padre
-            System.out.println("p1.length ="+p1.length);
-            int x1 = random(1,p1.length);
-            int x2 = random(x1,p1.length);
+            int x1,x2,d1p1,d2p1;
 
-            int[] ds = getds(x1,x2,Parser.REP_SIZE);
+            while (true){
+                // Se calcula el par de corte para el primer padre
+                x1=p1.length;
+                x2=p1.length;
+                x1 = random(1,p1.length-1);
+                x2 = random(x1,p1.length-1);
 
-            int[] ds_b = {0,0};
-            int x1_b = 0;
-            int x2_b = 0;
+                d1p1 = getd(x1,Parser.REP_SIZE);
+                d2p1 = getd(x2,Parser.REP_SIZE);
+
+                if ( ((p1.length==Parser.REP_SIZE) || (p2.length==Parser.REP_SIZE)) &&
+                        (d1p1>d2p1) || (d1p1 == 0) || (d2p1 == 0)) {
+                       continue; 
+                }
+                else {
+                    break;
+                }
+
+            }
+
+            int d1p2 = -1;
+            int d2p2 = -1;
+            int x1p2 = -1;
+            int x2p2 = -1;
             // Se calcula el par de corte para el segundo padre
             // y se valida hasta que sea correcto
-            // Primer d
-            while (ds_b[0]!=ds[0]) {
-                x1_b = random(1,p2.length);
-                ds_b = getds(x1_b,x2,Parser.REP_SIZE);
+
+            while ( d1p2!=d1p1 || d2p2!=d2p1) {
+                x1p2 = random(1,p2.length-1);
+                x2p2 = random(x1p2,p2.length-1);
+                d1p2 = getd(x1p2,Parser.REP_SIZE);
+                d2p2 = getd(x2p2,Parser.REP_SIZE);
             }
-                    
-            while (ds_b[1]!=ds[1] ){
-                x2_b = random(x1_b,p2.length);
-                ds_b = getds(x1,x2_b,Parser.REP_SIZE);
-            }
-            
-//            while (ds_b[0]!=ds[0] || ds_b[1]!=ds[1] ){
-//                x1_b = random(1,p2.length);
-//                x2_b = random(x1_b,p2.length);
-//                ds_b = getds(x1_b,x2_b,Parser.REP_SIZE);
-//            }
+
+            //System.out.println("d1p1="+d1p1+" d2p1="+d2p1+" x1="+x1+" x2="+x2+" x1p2="+x1p2+" x2p2="+x2p2);
 
             // Se inicializan los nuevos hijos
-            System.out.println((x1+1)+(x2_b-x1_b+1)+p1.length);
-            System.out.println("x2= "+x2);
-            System.out.println("x1 ="+x1);
-            int [] hijo1 = new int[(x1+1)+(x2_b-x1_b+1)+p1.length-x2];
-            int [] hijo2 = new int[(x1_b+1)+(x2-x1+1)+p2.length-x2_b];
+//            System.out.println("x1= "+x1);
+//            System.out.println("x2= "+x2);
+//            System.out.println("1/3: "+(x1));
+//            System.out.println("2/3: "+(x2p2-x1p2));
+//            System.out.println("3/3: "+(p1.length-x2));
+            int [] hijo1 = new int[(x1)+(x2p2-x1p2)+p1.length-x2];
+            int [] hijo2 = new int[(x1p2)+(x2-x1)+p2.length-x2p2];
 
             int conth1 = 0;
             int conth2 = 0;
@@ -369,7 +380,7 @@ public class GABIL {
                 hijo1[conth1] = p1[i];
                 conth1++;
             }
-            for (int i = x1_b; i<x2_b ; i++){
+            for (int i = x1p2; i<x2p2 ; i++){
                 hijo1[conth1] = p2[i];
                 conth1++;
             }
@@ -379,7 +390,7 @@ public class GABIL {
             }
 
             // Hijo2
-            for (int i = 0; i<x1_b ; i++){
+            for (int i = 0; i<x1p2 ; i++){
                 hijo2[conth2] = p2[i];
                 conth2++;
             }
@@ -387,7 +398,7 @@ public class GABIL {
                 hijo2[conth2] = p1[i];
                 conth2++;
             }
-            for (int i = x2_b; i<p2.length ; i++){
+            for (int i = x2p2; i<p2.length ; i++){
                 hijo2[conth2] = p2[i];
                 conth2++;
             }
@@ -395,7 +406,7 @@ public class GABIL {
 
 
             // Se agregan los hijos a la nueva poblacion
-            if (validHyp(hijo1)){
+            if (validHyp(hijo1) && validHyp(hijo2)){
                 Ps.add(hijo1);
                 Ps.add(hijo2);
             }
@@ -489,30 +500,18 @@ public class GABIL {
         while ((best = max(ftn)).getRight() < fitness_threshold) {
             // Crear nueva generación
             printHyp(population.get(best.getLeft()));
-            System.out.println("Fitness best = "+best.getRight());
-//            int prop = 500;
-            System.out.println("r = "+r);
             int prop = (int) ((1.0-r)*(double) p);
-//            System.out.println("Prop = "+prop2);
             ArrayList<Pair> Pr = computeProbs(ftn);
-            System.out.println("Roulette before");
             ArrayList<int[]> Ps = rouletteSelection(prop, population, Pr);
-            System.out.println("Roulette after");
             int n_cross = (int) ((r*p)/2);
-            System.out.println("Crossover before");
             Ps = crossover(n_cross, population, ftn, Ps, Pr);
-            System.out.println("Crossover after");
-            System.out.println("Mutate before");
             mutate(Ps);
-            System.out.println("Mutate after");
             population = Ps;
             ftn = fitness(population);
-//            System.out.println("NewFitness");
-//            for(int i = 0; i < ftn.length; i++)
-//                System.out.print(ftn[i]+" ");
-//            System.out.println("");
-//            System.out.println("Best in go");
-//            System.out.println(population.get(best.getLeft()));
+            
+            System.out.println("Max: "+max(ftn));
+            print_array(population.get(max(ftn).getLeft()));
+            System.out.println("---");
         }
         return population.get(best.getLeft());
     }
