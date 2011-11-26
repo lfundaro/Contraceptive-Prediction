@@ -9,26 +9,17 @@ public class Genetico {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-//        try {
             Parser p = new Parser(args[0]);
             ArrayList<int[]> trainingData = p.goBalanced();
-            
-//            int[] prueba = trainingData.get(0);
-//            for(int i = 0; i < prueba.length; i++)
-//                System.out.print(prueba[i]);
-//            System.out.println();
-//            int[] cprueba = {1,0,1,1,1,1,1,0,1,0,0,0,0,1,0,0,0,0,1,0,0,1,0,0,1,0,1,0,0,0,0,1,0,1,0,1};
-            int[] clasificador = {0,0,1,1,0,0,1,1,1,1,1,0,0,1,1,0,1,1,0,0,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,0,0,0,1,1,0,0,1,1,1,1,1,0,1,1,0,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,0,0,1,0,0,0,0,0,1,1,1,1,0,1,1,1,1,1,0,0,1,1,0,1,0,1,0,0,0,1,0,1,1,1,1,1,0,0,1,0,1,1,1,1,0,0,1,1,1,1,1,0,1,0,1,0,1,1,0,1,1,1,1,1,0,1,0,1,1,0,1,3,0,1,0,0,0,1,0,1,1,1,1,1,0,0,1,1,0,1,0,0,0,1,0,1,1,1,1,1,0,0,1,1,1,1,1,1,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,1,1,0,1,0,0,1,1,0,1,0,1,0,0,1,1,1,0,1,0,2,1,1,1,0,0,0,0,1,1,1,1,0,1,0,0,1,1,1,0,1,1,1,0,1,0,0,1,0,0,0,0,1,1,0,1,1,1,0,1,1,0,0,0,0,1,0,1,1,0,1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,0,2,0,0,0,0,1,0,0,1,1,0,0,0,1,1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1};
-            GABIL g = new GABIL(trainingData, 5000, 4.0/5.0, 0.04, 0.3,3);
-//            if (g.testAgainstTS(prueba, 0, cprueba)) {
-//                System.out.println("It works !");
-//            }
-//            else {
-//                System.out.println("It doesn't :(");
-//        
+
+            GABIL g = new GABIL(trainingData, 5000, 4.0/5.0, 0.04, 0.8,3);
+
             int[] bestHyp = g.go();
-            System.out.println("Best hypothesis");
-//            System.out.println(bestHyp);
+            System.out.println("Mejor clasificador encontrado");
+            System.out.print("Cantidad de 1s en la mejor hipotesis: ");
+            g.howmany1s(bestHyp);
+            g.printHyp(bestHyp);
+            System.out.println("---");
 //             Chequear solución
             
             Parser t = new Parser(args[1]);
@@ -49,13 +40,8 @@ public class Genetico {
                 }
                 if (success) {acc++;}
             }
-            //            System.out.println("training data size = "+trainingData.size());
-            //            if (acc > 20)
-            //                System.out.println("Acc = "+acc);
-            // Ṕrobar cada regla contra el training set.
             
             // Calcular fitness overall de la hipótesis
-            System.out.println("Acumulador = "+acc);
             double overall = (((double) acc) / ((double) testData.size()));
             
             System.out.println("Clasificados = "+overall);

@@ -40,6 +40,4 @@ public class Pair {
     public String toString() {
         return "Pair{" + "left=" + left + ", right=" + right + '}';
     }
-    
-    
 }
