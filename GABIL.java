@@ -85,7 +85,6 @@ public class GABIL {
     
     private int genField(int[] hyp, Random gen, int l, int h, String type) {
         double g = gen.nextDouble();
-//        g = 1;
         while (!validGen(hyp, l, h)) {
             if (g <= 0.5) {
                 // Random bit-a-bit
@@ -593,13 +592,15 @@ public class GABIL {
         for(int i = 0; i < ftn.length; i++)
             System.out.print(ftn[i]+" ");
         System.out.println("");
-        Pair best;
+        Pair best = null;
+        Pair secondBest = null;
         while ((best = max(ftn)).getRight() < fitness_threshold) {
             // Crear nueva generación
+            secondBest = best;
             int prop = (int) ((1.0-r)*(double) p);
             ArrayList<Pair> Pr = computeProbs(ftn);
             ArrayList<int[]> Ps = rouletteSelection(prop, population, Pr);
-//            ArrayList<int[]> Ps = tournamentSelection(prop, population, Pr);
+            //            ArrayList<int[]> Ps = tournamentSelection(prop, population, Pr);
             int n_cross = (int) ((r*p)/2);
             Ps = crossover(n_cross, population, ftn, Ps, Pr);
             mutate(Ps);
@@ -618,6 +619,27 @@ public class GABIL {
         howmany1s(population.get(best.getLeft()));
         printHyp(population.get(best.getLeft()));
         System.out.println("---");
-        return population.get(best.getLeft());
+        
+        if (Math.abs(secondBest.getRight() - best.getRight()) <= 0.1) {
+            System.out.println("PARECIDOS");
+            if (population.get(secondBest.getLeft()).length <
+                    population.get(best.getLeft()).length) {
+                System.out.println("RETORNO SECOND");
+                
+                System.out.println("Max: "+max(ftn));
+                System.out.print("Cantidad de 1s en la mejor hipotesis: ");
+                howmany1s(population.get(secondBest.getLeft()));
+                printHyp(population.get(secondBest.getLeft()));
+                System.out.println("---");
+                
+                return population.get(secondBest.getLeft());
+            }
+            else {
+                return population.get(best.getLeft());
+            }
+        }
+        else {
+            return population.get(best.getLeft());
+        }
     }
 }
