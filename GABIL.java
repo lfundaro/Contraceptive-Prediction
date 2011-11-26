@@ -547,6 +547,9 @@ public class GABIL {
         Pair best = null;
         Pair secondBest = null;
         while ((best = max(ftn)).getRight() < fitness_threshold) {
+//                || ((best.getRight() * trainingData.size()) / 
+//                (population.get(best.getLeft()).length / Parser.REP_SIZE)) 
+//                <= 6.0) {
             // Crear nueva generación
             secondBest = best.clone();
             int prop = (int) ((1.0-r)*(double) p);
@@ -574,17 +577,18 @@ public class GABIL {
         printHyp(population.get(best.getLeft()));
         System.out.println("---");
         
-        if (Math.abs(secondBest.getRight() - best.getRight()) <= 0.1) {
-            if (population.get(secondBest.getLeft()).length <
-                    population.get(best.getLeft()).length) {
-                return population.get(secondBest.getLeft());
-            }
-            else {
-                return population.get(best.getLeft());
-            }
-        }
-        else {
-            return population.get(best.getLeft());
-        }
+//        if (Math.abs(secondBest.getRight() - best.getRight()) <= 0.1) {
+//            if (population.get(secondBest.getLeft()).length <
+//                    population.get(best.getLeft()).length) {
+//                return population.get(secondBest.getLeft());
+//            }
+//            else {
+//                return population.get(best.getLeft());
+//            }
+//        }
+//        else {
+//            return population.get(best.getLeft());
+//        }
+        return population.get(best.getLeft());
     }
 }

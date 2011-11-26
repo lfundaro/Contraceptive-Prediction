@@ -11,7 +11,7 @@ public class Genetico {
     public static void main(String[] args) {
             Parser p = new Parser(args[0]);
             ArrayList<int[]> trainingData = p.goBalanced();
-
+            
             GABIL g = new GABIL(trainingData, 5000, 4.0/5.0, 0.04, 0.8,3);
 
             int[] bestHyp = g.go();
